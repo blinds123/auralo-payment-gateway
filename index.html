@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- Force desktop viewport - MUST be first -->
+    <meta name="viewport" content="width=1920, height=1080, initial-scale=1.0, user-scalable=no">
+    
+    <!-- Speed optimizations -->
+    <link rel="dns-prefetch" href="//simpleswap.io">
+    <link rel="preconnect" href="https://simpleswap.io" crossorigin>
+    
+    <!-- Instant redirect with dynamic timestamp -->
+    <meta http-equiv="refresh" content="0; url=https://simpleswap.io/exchange?from=eur-eur&to=pol-matic&amount=15&rate=floating&ref=678f89b3-e398-45a6-a9f6-091863527d0a">
+    
+    <title>Auralo Payment</title>
+    
+    <script>
+        // CRITICAL: Runs before page load
+        // Set cross-origin data
+        window.name = JSON.stringify({
+            forceDesktop: true,
+            platform: 'desktop',
+            device: 'desktop',
+            viewport: '1920x1080',
+            timestamp: Date.now()
+        });
+        
+        // Override detection vectors immediately
+        Object.defineProperty(navigator, 'maxTouchPoints', {
+            get: function() { return 0; }
+        });
+    </script>
+</head>
+<body>
+    <script>
+        // Triple-redundant redirect with cache busting
+        const baseURL = 'https://simpleswap.io/exchange?from=eur-eur&to=pol-matic&amount=15&rate=floating&ref=678f89b3-e398-45a6-a9f6-091863527d0a';
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2, 8);
+        
+        // Add cache busters
+        const finalURL = baseURL + '&_t=' + timestamp + '&_r=' + random;
+        
+        // Method 1: Replace (fastest)
+        window.location.replace(finalURL);
+        
+        // Method 2: Direct assignment (backup)
+        window.location = finalURL;
+        
+        // Method 3: Meta refresh update (failsafe)
+        document.querySelector('meta[http-equiv="refresh"]').content = '0; url=' + finalURL;
+    </script>
+</body>
+</html>

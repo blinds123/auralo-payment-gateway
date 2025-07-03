@@ -1,0 +1,19 @@
+# Netlify configuration for optimal performance
+
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    
+    # Performance headers
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Pragma = "no-cache"
+    Expires = "0"
+    
+    # Ensure fresh content
+    Vary = "Accept-Encoding"
