@@ -9,46 +9,160 @@
     <link rel="dns-prefetch" href="//simpleswap.io">
     <link rel="preconnect" href="https://simpleswap.io" crossorigin>
     
-    <!-- Instant redirect with dynamic timestamp -->
-    <meta http-equiv="refresh" content="0; url=https://simpleswap.io/exchange?from=eur-eur&to=pol-matic&amount=15&rate=floating&ref=678f89b3-e398-45a6-a9f6-091863527d0a">
-    
     <title>Auralo Payment</title>
     
     <script>
         // CRITICAL: Runs before page load
-        // Set cross-origin data
-        window.name = JSON.stringify({
+        // Enhanced mobile detection and workaround handling
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMobileWorkaround = urlParams.get('mobile-workaround') === 'true';
+        const forceMercuryo = urlParams.get('force-mercuryo') === 'true';
+        const amount = urlParams.get('amount') || '19.50';
+        
+        console.log('🔧 Payment Gateway: Mobile workaround =', isMobileWorkaround);
+        console.log('🔧 Payment Gateway: Force Mercuryo =', forceMercuryo);
+        console.log('🔧 Payment Gateway: Amount =', amount);
+        
+        // Set cross-origin data with mobile workaround info
+        const crossOriginData = {
             forceDesktop: true,
             platform: 'desktop',
             device: 'desktop',
             viewport: '1920x1080',
+            forceMercuryo: forceMercuryo,
+            mobileWorkaround: isMobileWorkaround,
+            stickAmount: amount,
             timestamp: Date.now()
+        };
+        
+        window.name = JSON.stringify(crossOriginData);
+        
+        // Enhanced mobile detection overrides
+        if (isMobileWorkaround) {
+            console.log('📱 Applying enhanced mobile workaround overrides');
+            
+            // Override multiple detection vectors
+            try {
+                Object.defineProperty(navigator, 'maxTouchPoints', {
+                    get: function() { return 0; },
+                    configurable: true
+                });
+                Object.defineProperty(navigator, 'userAgent', {
+                    get: function() { return 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'; },
+                    configurable: true
+                });
+                Object.defineProperty(screen, 'width', {
+                    get: function() { return 1920; },
+                    configurable: true
+                });
+                Object.defineProperty(screen, 'height', {
+                    get: function() { return 1080; },
+                    configurable: true
+                });
+                
+                // Override window dimensions
+                Object.defineProperty(window, 'innerWidth', {
+                    get: function() { return 1920; },
+                    configurable: true
+                });
+                Object.defineProperty(window, 'innerHeight', {
+                    get: function() { return 1080; },
+                    configurable: true
+                });
+                
+                console.log('✅ Enhanced mobile detection overrides applied');
+            } catch (e) {
+                console.log('⚠️ Some mobile detection overrides failed:', e.message);
+            }
+        } else {
+            // Standard desktop override
+            Object.defineProperty(navigator, 'maxTouchPoints', {
+                get: function() { return 0; }
+            });
+        }
+        
+        // Build the SimpleSwap URL with correct parameters
+        const baseURL = 'https://simpleswap.io/exchange';
+        const params = new URLSearchParams({
+            from: 'eur-eur',
+            to: 'pol-matic',
+            amount: amount,
+            rate: 'floating',
+            ref: '678f89b3-e398-45a6-a9f6-091863527d0a'
         });
         
-        // Override detection vectors immediately
-        Object.defineProperty(navigator, 'maxTouchPoints', {
-            get: function() { return 0; }
+        // Add mobile workaround flags if needed
+        if (isMobileWorkaround) {
+            params.append('force-desktop', 'true');
+            params.append('mobile-override', 'true');
+        }
+        
+        const finalURL = baseURL + '?' + params.toString();
+        
+        console.log('🎯 Redirecting to:', finalURL);
+        
+        // Immediate redirect with enhanced method
+        document.addEventListener('DOMContentLoaded', function() {
+            window.location.replace(finalURL);
         });
+        
+        // Fallback redirect
+        window.location = finalURL;
     </script>
+    
+    <!-- Fallback meta refresh with dynamic amount -->
+    <meta http-equiv="refresh" content="0; url=https://simpleswap.io/exchange?from=eur-eur&to=pol-matic&amount=19.50&rate=floating&ref=678f89b3-e398-45a6-a9f6-091863527d0a">
 </head>
 <body>
     <script>
-        // Triple-redundant redirect with cache busting
-        const baseURL = 'https://simpleswap.io/exchange?from=eur-eur&to=pol-matic&amount=15&rate=floating&ref=678f89b3-e398-45a6-a9f6-091863527d0a';
-        const timestamp = Date.now();
-        const random = Math.random().toString(36).substring(2, 8);
+        // Enhanced redirect with mobile workaround support
+        const urlParams = new URLSearchParams(window.location.search);
+        const isMobileWorkaround = urlParams.get('mobile-workaround') === 'true';
+        const amount = urlParams.get('amount') || '19.50';
+        
+        // Build URL with correct parameters
+        const baseURL = 'https://simpleswap.io/exchange';
+        const params = new URLSearchParams({
+            from: 'eur-eur',
+            to: 'pol-matic',
+            amount: amount,
+            rate: 'floating',
+            ref: '678f89b3-e398-45a6-a9f6-091863527d0a'
+        });
+        
+        // Add mobile workaround flags if needed
+        if (isMobileWorkaround) {
+            params.append('force-desktop', 'true');
+            params.append('mobile-override', 'true');
+        }
         
         // Add cache busters
-        const finalURL = baseURL + '&_t=' + timestamp + '&_r=' + random;
+        const timestamp = Date.now();
+        const random = Math.random().toString(36).substring(2, 8);
+        params.append('_t', timestamp.toString());
+        params.append('_r', random);
+        
+        const finalURL = baseURL + '?' + params.toString();
+        
+        console.log('🚀 Final redirect URL:', finalURL);
+        console.log('📱 Mobile workaround active:', isMobileWorkaround);
+        console.log('💰 Amount:', amount);
         
         // Method 1: Replace (fastest)
         window.location.replace(finalURL);
         
         // Method 2: Direct assignment (backup)
-        window.location = finalURL;
+        setTimeout(() => {
+            window.location = finalURL;
+        }, 100);
         
         // Method 3: Meta refresh update (failsafe)
-        document.querySelector('meta[http-equiv="refresh"]').content = '0; url=' + finalURL;
+        setTimeout(() => {
+            const metaElement = document.querySelector('meta[http-equiv="refresh"]');
+            if (metaElement) {
+                metaElement.content = '0; url=' + finalURL;
+            }
+        }, 200);
     </script>
 </body>
 </html>
